@@ -1,6 +1,6 @@
 import { Header } from "@/components/home/Header";
 import { Features } from "@/components/home/Features";
-import { Testimonials } from "@/components/home/Testimonials";
+import { StaggerTestimonials } from "@/components/ui/stagger-testimonials";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -46,7 +46,7 @@ const Home = () => {
         </WavyBackground>
 
         <Features />
-        <Testimonials />
+        <StaggerTestimonials />
 
         <section className="py-20 bg-gradient-to-r from-primary/20 to-accent/20">
           <div className="max-w-3xl mx-auto px-6 text-center">
@@ -106,7 +106,9 @@ const Home = () => {
                   placeholder="Enter your email"
                   className="bg-white/5 border-white/10 text-white placeholder:text-white/40"
                 />
-                <Button className="w-full bg-white/10 backdrop-blur-md border border-white/20 
+                <Button 
+                  onClick={() => navigate('/dashboard')}
+                  className="w-full bg-white/10 backdrop-blur-md border border-white/20 
                                 hover:bg-white/20 transition-all duration-300 text-white">
                   Subscribe
                   <Mail className="ml-2 h-4 w-4" />
@@ -122,6 +124,5 @@ const Home = () => {
     </div>
   );
 };
-
 
 export default Home;

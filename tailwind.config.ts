@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-export default {
+const config = {
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",
@@ -57,43 +57,43 @@ export default {
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))'
+          foreground: 'hsl(var(--popover-foreground))',
         },
         card: {
           DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))'
+          foreground: 'hsl(var(--card-foreground))',
         }
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)'
+        sm: 'calc(var(--radius) - 4px)',
       },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
-          to: { height: 'var(--radix-accordion-content-height)' }
+          to: { height: 'var(--radix-accordion-content-height)' },
         },
         'accordion-up': {
           from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: '0' }
+          to: { height: '0' },
         },
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' }
+          '50%': { transform: 'translateY(-10px)' },
         },
         scale: {
           '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.1)' }
+          '50%': { transform: 'scale(1.1)' },
         },
         'spin-slow': {
           '0%': { transform: 'rotate(0deg)' },
-          '100%': { transform: 'rotate(360deg)' }
+          '100%': { transform: 'rotate(360deg)' },
         },
         marquee: {
           from: { transform: 'translateX(0)' },
-          to: { transform: 'translateX(calc(-100% - var(--gap)))' }
-        }
+          to: { transform: 'translateX(calc(-100% - var(--gap)))' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -101,9 +101,11 @@ export default {
         'float': 'float 3s ease-in-out infinite',
         'scale': 'scale 0.3s ease-in-out',
         'spin-slow': 'spin-slow 20s linear infinite',
-        'marquee': 'marquee var(--duration) linear infinite'
-      }
-    }
+        'marquee': 'marquee var(--duration) linear infinite',
+      },
+    },
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
+export default config;
