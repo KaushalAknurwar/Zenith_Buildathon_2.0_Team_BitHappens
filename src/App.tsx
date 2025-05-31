@@ -56,7 +56,6 @@ const App = () => (
             <Route path="/games/breathing" element={<BreathingGame />} />
             <Route path="/games/emoji-garden" element={<EmojiGarden />} />
             <Route path="/games/punching-bag" element={<PunchingBag />} />
-            <Route path="/games/mental-health-quiz" element={<QuizSection />} />
             <Route 
               path="/profile" 
               element={

@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Gamepad2, Puzzle, Heart, Flower2, ArrowLeft, Dumbbell, Brain } from 'lucide-react';
+import { Gamepad2, Puzzle, Heart, Flower2, ArrowLeft, Dumbbell } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const PunchingBag = lazy(() => import('@/components/PunchingBag/PunchingBag'));
@@ -59,13 +59,6 @@ const games = [
     description: 'Release stress by punching a virtual bag',
     icon: Dumbbell,
     route: '/games/punching-bag'
-  },
-  {
-    id: 'mental-health-quiz',
-    name: 'Mental Health Quiz',
-    description: 'Test your mental health knowledge with AI-generated questions',
-    icon: Brain,
-    route: '/games/mental-health-quiz'
   }
 ];
 
@@ -88,7 +81,7 @@ const Games = () => {
         <motion.div variants={item}>
           <Button 
             variant="outline" 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
             className="bg-white/5 backdrop-blur-lg border border-white/10 hover:bg-white/10 text-white px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 group mb-8"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

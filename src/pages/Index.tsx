@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Gamepad2, User, Sparkles, HeartHandshake } from "lucide-react";
 import { motion } from "framer-motion";
 import GoalTracker from "@/components/GoalTracker";
-import QuizSection from "@/components/QuizSection";
 import Satrang from "@/components/Satrang/Satrang";
 import CopingChallenges from "@/components/CopingChallenges";
 import CommunityHub from "@/components/community/CommunityHub";
@@ -151,13 +150,6 @@ const Index = () => {
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <CopingChallenges />
-                </motion.div>
-                <motion.div 
-                  className="bg-white/5 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-white/10 overflow-hidden group hover:border-[#8B5CF6]/50"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <QuizSection />
                 </motion.div>
                 </motion.div>
 

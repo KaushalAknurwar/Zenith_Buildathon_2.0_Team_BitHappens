@@ -20,27 +20,19 @@ const Home = () => {
           backgroundFill="#1A1A2E"
         >
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 text-center animate-fade-in font-['Comic Sans MS']">
-            Transform Your Mental Wellness Journey
+            More Than an App — Your Trusted Mind Companion
           </h1>
           <p className="text-xl md:text-2xl text-white/80 mb-12 max-w-2xl mx-auto text-center animate-fade-in delay-100 font-['Comic Sans MS']">
-            Track your moods, practice mindfulness, and nurture your emotional well-being
+            The space where your emotions find a voice, your safety is prioritized, and support is always within reach.
           </p>
-          <div className="flex justify-center gap-4 animate-fade-in delay-200">
+          <div className="flex justify-center animate-fade-in delay-200">
             <Button
               onClick={() => navigate('/dashboard')}
               className="bg-white/10 backdrop-blur-md border border-white/20 
                 hover:bg-white/20 transition-all duration-300 text-white
                 px-8 py-6 text-lg rounded-full"
             >
-              Get Started
-            </Button>
-            <Button
-              onClick={() => navigate('/dashboard')}
-              className="bg-white/10 backdrop-blur-md border border-white/20 
-                hover:bg-white/20 transition-all duration-300 text-white
-                px-8 py-6 text-lg rounded-full"
-            >
-              Learn More
+              Start your Journey
             </Button>
           </div>
         </WavyBackground>
