@@ -13,7 +13,10 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:3001'],
+  credentials: true
+}));
 app.use(bodyParser.json());
 
 // Simple sentiment analysis endpoint
