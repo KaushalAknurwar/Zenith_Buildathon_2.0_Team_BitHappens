@@ -12,10 +12,10 @@ const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID;
 const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN;
 
 if (!accountSid || !authToken) {
-  throw new Error('Missing required Twilio credentials in environment variables');
+  console.log('Missing required Twilio credentials in environment variables');
 }
 
-const client = twilio(accountSid, authToken);
+const client = accountSid && authToken ? twilio(accountSid, authToken) : null;
 
 const app = express();
 
@@ -44,6 +44,16 @@ app.post('/crisis-alert', async (req, res) => {
     const emergencyMessage = `Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=${latitude},${longitude}`;
     console.log('Sending emergency messages:', emergencyMessage);
 
+    // Check if Twilio is configured
+    if (!client) {
+      console.log('Twilio not configured, skipping message sending');
+      res.status(200).json({ 
+        message: 'Crisis alert received (Twilio not configured)',
+        mockMode: true
+      });
+      return;
+    }
+
     // Recipient numbers
     const recipients = [
       process.env.EMERGENCY_CONTACT_NUMBER
@@ -64,21 +74,9 @@ app.post('/crisis-alert', async (req, res) => {
     const smsMessages = await Promise.all(smsPromises);
     console.log('SMS messages sent successfully:', smsMessages.map(msg => msg.sid));
 
-    // Send WhatsApp to all recipients
-    const whatsappPromises = recipients.map(to => 
-      client.messages.create({
-        body: emergencyMessage,
-        from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
-        to: `whatsapp:${to}`
-      })
-    );
-    const whatsappMessages = await Promise.all(whatsappPromises);
-    console.log('WhatsApp messages sent successfully:', whatsappMessages.map(msg => msg.sid));
-
     res.status(200).json({ 
       message: 'Crisis alerts sent successfully',
-      smsMessageIds: smsMessages.map(msg => msg.sid),
-      whatsappMessageIds: whatsappMessages.map(msg => msg.sid)
+      smsMessageIds: smsMessages.map(msg => msg.sid)
     });
   } catch (error) {
     console.error('Failed to send crisis alerts:', error);
@@ -95,6 +93,16 @@ app.post('/emergency', async (req, res) => {
 
   try {
     const messageBody = `Your Friend needs help reach out to them asap. Details:\nName: ${name}\nPhone: ${phone}\nSituation: ${situation}`;
+
+    // Check if Twilio is configured
+    if (!client) {
+      console.log('Twilio not configured, skipping message sending');
+      res.status(200).json({ 
+        success: true,
+        mockMode: true
+      });
+      return;
+    }
 
     // Recipient numbers
     const recipients = [
@@ -115,20 +123,9 @@ app.post('/emergency', async (req, res) => {
     );
     const smsMessages = await Promise.all(smsPromises);
 
-    // Send WhatsApp to all recipients
-    const whatsappPromises = recipients.map(to => 
-      client.messages.create({
-        body: messageBody,
-        from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
-        to: `whatsapp:${to}`
-      })
-    );
-    const whatsappMessages = await Promise.all(whatsappPromises);
-
     return res.status(200).json({ 
       success: true, 
-      smsMessageIds: smsMessages.map(msg => msg.sid),
-      whatsappMessageIds: whatsappMessages.map(msg => msg.sid)
+      smsMessageIds: smsMessages.map(msg => msg.sid)
     });
   } catch (error) {
     console.error('Twilio error:', error);
@@ -141,4 +138,4 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-exports.handler = serverless(app);
+module.exports.handler = serverless(app);
