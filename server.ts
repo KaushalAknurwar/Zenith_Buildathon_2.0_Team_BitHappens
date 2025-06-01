@@ -90,29 +90,34 @@ router.get('/health', (req: Request, res: Response) => {
 // Mount router
 app.use('/api', router);
 
-// Start server
-const server = app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  console.log('Twilio configuration:', {
-    accountSid: accountSid.substring(0, 5) + '...',
-    fromNumber: '+17753681889',
-    toNumber: '+918788293663'
+// Only start the server if we're not in a Netlify function environment
+if (process.env.NODE_ENV !== 'production') {
+  const server = app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+    console.log('Twilio configuration:', {
+      accountSid: accountSid.substring(0, 5) + '...',
+      fromNumber: '+17753681889',
+      toNumber: '+918788293663'
+    });
   });
-});
 
-// Handle server shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  server.close(() => {
-    console.log('HTTP server closed');
-    process.exit(0);
+  // Handle server shutdown
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received: closing HTTP server');
+    server.close(() => {
+      console.log('HTTP server closed');
+      process.exit(0);
+    });
   });
-});
 
-process.on('SIGINT', () => {
-  console.log('SIGINT signal received: closing HTTP server');
-  server.close(() => {
-    console.log('HTTP server closed');
-    process.exit(0);
+  process.on('SIGINT', () => {
+    console.log('SIGINT signal received: closing HTTP server');
+    server.close(() => {
+      console.log('HTTP server closed');
+      process.exit(0);
+    });
   });
-}); 
+}
+
+// Export the app for serverless functions
+export default app;
