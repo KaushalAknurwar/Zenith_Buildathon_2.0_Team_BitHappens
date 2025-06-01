@@ -27,7 +27,3 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["express", "cors", "twilio", "serverless-http"]
-
-# Add Procfile for multiple processes
-[build.processing]
-  skip_processing = false
