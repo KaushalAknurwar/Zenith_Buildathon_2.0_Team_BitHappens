@@ -4,8 +4,6 @@ import bodyParser from 'body-parser';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
-import http from 'http';
-import https from 'https';
 
 dotenv.config();
 
@@ -15,56 +13,30 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:3002'],
-  credentials: true
-}));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(join(__dirname, 'dist')));
 
-// Forward API requests to the API server
-app.use('/api', async (req, res) => {
+// API Routes - In production, these will be handled by Netlify Functions
+app.use('/api', (req, res, next) => {
   try {
-    // Forward the request to the API server running on port 3002
-    const apiUrl = `http://localhost:3002${req.url}`;
-    console.log(`Forwarding request to: ${apiUrl}`);
-    
-    const apiRequest = http.request(
-      apiUrl,
-      {
-        method: req.method,
-        headers: {
-          'Content-Type': 'application/json',
-          ...req.headers
+    const apiPath = join(__dirname, 'src', 'api');
+    import(join(apiPath, 'server.js'))
+      .then(module => {
+        // Forward the request to the appropriate handler in the API server
+        const path = req.path.substring(1); // Remove leading slash
+        if (path && typeof module[path] === 'function') {
+          module[path](req, res);
+        } else {
+          res.status(404).json({ error: 'API endpoint not found' });
         }
-      },
-      (apiResponse) => {
-        res.status(apiResponse.statusCode || 500);
-        
-        // Copy headers from API response
-        Object.keys(apiResponse.headers).forEach(key => {
-          res.setHeader(key, apiResponse.headers[key]);
-        });
-        
-        // Pipe the API response to our response
-        apiResponse.pipe(res);
-      }
-    );
-    
-    // Handle errors
-    apiRequest.on('error', (error) => {
-      console.error('Error forwarding to API server:', error);
-      res.status(500).json({ error: 'Failed to reach API server' });
-    });
-    
-    // Forward the request body
-    if (req.body) {
-      apiRequest.write(JSON.stringify(req.body));
-    }
-    
-    apiRequest.end();
+      })
+      .catch(error => {
+        console.error('API route error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      });
   } catch (error) {
-    console.error('API proxy error:', error);
+    console.error('API routing error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -75,6 +47,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Main server running on port ${PORT}`);
-  console.log(`Open http://localhost:${PORT} in your browser`);
+  console.log(`Server running on port ${PORT}`);
 });

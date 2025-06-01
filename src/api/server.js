@@ -2,25 +2,22 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 
 dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3002;
 
+// Enable CORS for all routes
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json());
 
 // Simple sentiment analysis endpoint
-app.post('/sentiment', (req, res) => {
+export const sentiment = (req, res) => {
   try {
     const { text } = req.body;
 
@@ -56,10 +53,10 @@ app.post('/sentiment', (req, res) => {
     console.error('Sentiment analysis error:', error);
     res.status(500).json({ error: 'Failed to analyze sentiment' });
   }
-});
+};
 
 // Crisis alert endpoint
-app.post('/crisis-alert', (req, res) => {
+export const crisisAlert = (req, res) => {
   try {
     const { username, latitude, longitude } = req.body;
     
@@ -74,10 +71,10 @@ app.post('/crisis-alert', (req, res) => {
     console.error('Crisis alert error:', error);
     res.status(500).json({ error: 'Failed to send crisis alert' });
   }
-});
+};
 
 // Emergency notification endpoint
-app.post('/emergency', (req, res) => {
+export const emergency = (req, res) => {
   try {
     const { name, phone, situation } = req.body;
     
@@ -89,10 +86,10 @@ app.post('/emergency', (req, res) => {
     console.error('Emergency notification error:', error);
     res.status(500).json({ error: 'Failed to send emergency notification' });
   }
-});
+};
 
 // Image generation endpoint
-app.post('/generate-image', (req, res) => {
+export const generateImage = (req, res) => {
   try {
     const { prompt } = req.body;
     
@@ -111,14 +108,21 @@ app.post('/generate-image', (req, res) => {
     console.error('Image generation error:', error);
     res.status(500).json({ error: 'Failed to generate image' });
   }
-});
+};
 
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.json({ status: 'API server is running' });
-});
+// Only start the server if this file is run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  app.post('/sentiment', sentiment);
+  app.post('/crisis-alert', crisisAlert);
+  app.post('/emergency', emergency);
+  app.post('/generate-image', generateImage);
 
-app.listen(PORT, () => {
-  console.log(`API server running on port ${PORT}`);
-  console.log(`API endpoints available at http://localhost:${PORT}`);
-});
+  // Health check endpoint
+  app.get('/', (req, res) => {
+    res.json({ status: 'API server is running' });
+  });
+
+  app.listen(PORT, () => {
+    console.log(`API server running on port ${PORT}`);
+  });
+}
