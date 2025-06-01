@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const twilio = require('twilio');
-const serverless = require('netlify-functions');
+const serverless = require('serverless-http');
 
 // Twilio configuration
 const accountSid = 'AC0b077a09883015f99d299d3f6b6ec088';
@@ -124,4 +124,4 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-exports.handler = serverless.handler(app);
+exports.handler = serverless(app);

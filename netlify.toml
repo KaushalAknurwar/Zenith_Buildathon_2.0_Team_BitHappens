@@ -26,4 +26,4 @@
 
 [functions]
   node_bundler = "esbuild"
-  external_node_modules = ["express", "cors", "twilio"]
+  external_node_modules = ["express", "cors", "twilio", "serverless-http"]
