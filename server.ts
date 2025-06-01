@@ -18,7 +18,14 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(join(__dirname, 'dist')));
 
-const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
+// Check if HuggingFace API key exists before initializing
+const hfApiKey = process.env.HUGGINGFACE_API_KEY;
+if (!hfApiKey || hfApiKey === 'your_huggingface_api_key_here') {
+  console.error('Invalid or missing HUGGINGFACE_API_KEY in .env file');
+  process.exit(1);
+}
+
+const hf = new HfInference(hfApiKey);
 
 // API Routes
 app.use('/api', (req, res, next) => {
