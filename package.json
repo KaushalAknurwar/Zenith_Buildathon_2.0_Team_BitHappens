@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server.js",
-    "api": "node src/api/server.js",
+    "api": "cd src/api && node server.js",
     "start": "npm run build && node server.js"
   },
   "dependencies": {
