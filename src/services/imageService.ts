@@ -6,20 +6,19 @@ interface ImageGenerationOptions {
   negative_prompt?: string;
 }
 
-// Use Nebius AI for image generation
+const API_BASE_URL = "http://localhost:5000/api";
+
 export const generateImage = async ({
   prompt,
   image_generator_version = "standard",
   negative_prompt
-}: ImageGenerationOptions): Promise<string> => {
+}: ImageGenerationOptions) => {
   try {
-    // Call the Nebius AI API endpoint
-    const response = await axios.post('/api/generate-image', {
+    const response = await axios.post(`${API_BASE_URL}/generate-image`, {
       prompt,
       image_generator_version,
       negative_prompt
     });
-    
     return response.data.imageUrl;
   } catch (error) {
     console.error("Error generating image:", error);

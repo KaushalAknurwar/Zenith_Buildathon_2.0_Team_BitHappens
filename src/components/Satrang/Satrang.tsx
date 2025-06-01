@@ -4,7 +4,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, Loader2, Paintbrush } from 'lucide-react';
 import { useJournal } from '@/contexts/JournalContext';
-import { generateImage } from '@/services/imageService';
+import { generateImage } from '@/services/imageService.ts';
 
 interface SatrangProps {
 	className?: string;
@@ -20,11 +20,7 @@ export function Satrang({ className }: SatrangProps) {
 	
 	const handleGenerateImage = async () => {
 		if (!prompt.trim()) {
-			toast({
-				title: "Please enter a prompt",
-				description: "Describe what you want to create",
-				variant: "destructive"
-			});
+			alert('Please enter a prompt!');
 			return;
 		}
 
@@ -44,7 +40,7 @@ export function Satrang({ className }: SatrangProps) {
 		} catch (error) {
 			toast({
 				title: "Error",
-				description: "Failed to generate art. Please try again.",
+				description: "Failed to generate art",
 				variant: "destructive"
 			});
 		} finally {
@@ -67,18 +63,13 @@ export function Satrang({ className }: SatrangProps) {
 
 		setGeneratedImage(null);
 		setJournalEntry('');
-		
-		toast({
-			title: "Artwork Saved",
-			description: "Your artwork has been saved to your journal.",
-		});
 	};
 
 	return (
 		<div className={`p-8 ${className} min-h-screen bg-black/40 bg-gradient-to-br from-[#8B5CF6]/5 to-[#D946EF]/5`}>
 			<div className="max-w-4xl mx-auto backdrop-blur-md bg-black/40 rounded-xl p-8 border border-white/20 hover:border-[#8B5CF6]/50 transition-all duration-300">
 				<div className="flex items-center gap-3 mb-8">
-					<Paintbrush className="w-8 h-8 text-[#D946EF]"/>
+					<Paintbrush className="w-8 h-8 text-[#D946EF]" />
 					<h2 className="text-3xl font-bold bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] bg-clip-text text-transparent">
 						Satrang
 					</h2>
@@ -103,10 +94,12 @@ export function Satrang({ className }: SatrangProps) {
 							>
 								{isLoading ? (
 									<>
-										<Loader2 className="animate-spin mr-2"/>
+										<Loader2 className="animate-spin mr-2" />
 										Generating...
 									</>
-								) : ('Generate Art')}
+								) : (
+									'Generate Art'
+								)}
 							</Button>
 							
 							{generatedImage && (
@@ -115,7 +108,7 @@ export function Satrang({ className }: SatrangProps) {
 									variant="outline"
 									className="flex-shrink-0 bg-black/20 border-green-500/30 text-green-400 hover:bg-black/30 hover:text-green-300 rounded-xl h-12 shadow-lg transition-all duration-300"
 								>
-									<Save className="w-4 h-4 mr-2"/>
+									<Save className="w-4 h-4 mr-2" />
 									Save Art
 								</Button>
 							)}
@@ -124,7 +117,11 @@ export function Satrang({ className }: SatrangProps) {
 
 					{generatedImage && (
 						<div className="mt-8 rounded-xl overflow-hidden border border-white/20 shadow-lg backdrop-blur-sm bg-black/20">
-							<img src={generatedImage} alt="Generated artwork" className="w-full h-auto"/>
+							<img
+								src={generatedImage}
+								alt="Generated artwork"
+								className="w-full h-auto"
+							/>
 						</div>
 					)}
 				</div>

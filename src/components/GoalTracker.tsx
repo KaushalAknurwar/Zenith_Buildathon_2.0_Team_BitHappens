@@ -84,12 +84,12 @@ const GoalTracker = () => {
     <div className="space-y-6 p-6 bg-black/40 bg-gradient-to-br from-[#8B5CF6]/5 to-[#D946EF]/5 backdrop-blur-md rounded-xl border-white/20">
       {/* Header */}
       <div className="flex items-center gap-2 p-4 border-b border-white/20 bg-black/20 backdrop-blur-md rounded-t-xl -mt-6 -mx-6">
-        <Target className="w-6 h-6 text-[#D946EF]"/>
+        <Target className="w-6 h-6 text-[#D946EF]" />
         <div className="flex-1">
           <h2 className="font-semibold text-white">Goal Setting</h2>
           <p className="text-sm text-white/80">Track your progress and earn rewards</p>
         </div>
-        <Trophy className="w-5 h-5 text-[#8B5CF6]"/>
+        <Trophy className="w-5 h-5 text-[#8B5CF6]" />
       </div>
 
       {/* Add New Goal Form */}
@@ -153,7 +153,7 @@ const GoalTracker = () => {
             className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] text-white font-medium hover:opacity-90 transition-opacity shadow-lg"
             onClick={handleAddGoal}
           >
-            <Plus className="w-4 h-4 mr-2"/>
+            <Plus className="w-4 h-4 mr-2" />
             Add Goal
           </Button>
         </div>
@@ -169,7 +169,7 @@ const GoalTracker = () => {
                 <p className="text-sm text-white/60">{goal.description}</p>
               </div>
               <Badge variant="secondary" className="bg-black/40 text-white border-white/20 flex items-center gap-1">
-                <Tag className="w-4 h-4"/>
+                <Tag className="w-4 h-4" />
                 {goal.category}
               </Badge>
             </div>
@@ -183,18 +183,19 @@ const GoalTracker = () => {
                 <Progress 
                   value={goal.progress} 
                   className="h-2 bg-white/10"
+                  indicatorClassName="bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]"
                 />
               </div>
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-white/60"/>
+                  <Calendar className="w-4 h-4 text-white/60" />
                   <span className="text-sm text-white/60">
                     {new Date(goal.endDate).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-[#8B5CF6]"/>
+                  <Trophy className="w-4 h-4 text-[#8B5CF6]" />
                   <span className="font-semibold text-white">{goal.points} pts</span>
                 </div>
               </div>

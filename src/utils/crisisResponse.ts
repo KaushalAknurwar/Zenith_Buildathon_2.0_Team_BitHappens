@@ -21,8 +21,7 @@ export const isCrisisMessage = (text: string): boolean => {
 export const getCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
-      // Fallback to default location if geolocation is not supported
-      resolve({ lat: 40.7128, lng: -74.0060 }); // New York coordinates as fallback
+      reject(new Error('Geolocation is not supported by your browser'));
       return;
     }
 
@@ -34,9 +33,7 @@ export const getCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
         });
       },
       (error) => {
-        console.warn('Geolocation error:', error);
-        // Fallback to default location if there's an error
-        resolve({ lat: 40.7128, lng: -74.0060 }); // New York coordinates as fallback
+        reject(error);
       },
       {
         enableHighAccuracy: true,
@@ -52,8 +49,7 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
   try {
     console.log('Sending crisis alert with coordinates:', coords);
     
-    // Call the API endpoint that will use Twilio
-    const response = await fetch('/api/crisis-alert', {
+    const response = await fetch('http://localhost:3001/api/crisis-alert', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -65,22 +61,21 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
       }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error('Failed to send crisis alert');
+      throw new Error(data.message || 'Failed to send crisis alert');
     }
 
-    const data = await response.json();
     console.log("✅ Crisis alert sent successfully:", data);
-    
     return {
       success: true,
       message: 'Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=' + coords.lat + ',' + coords.lng
     };
   } catch (err) {
     console.error("❌ Failed to send crisis alert:", err);
-    // Even if the API call fails, we should still return a success message to the user
     return {
-      success: true,
+      success: false,
       message: 'Your Friend needs help reach out to them asap'
     };
   }
@@ -98,4 +93,4 @@ export const handleCrisisSituation = async (username: string): Promise<{ success
       message: 'Your Friend needs help reach out to them asap'
     };
   }
-};
+}; 
