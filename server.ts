@@ -1,5 +1,5 @@
 import express from 'express';
-import type { Request, Response, Router, RequestHandler } from 'express';
+import type { Request, Response, Router } from 'express';
 import cors from 'cors';
 import twilio from 'twilio';
 import { HfInference } from '@huggingface/inference';
@@ -45,7 +45,7 @@ app.post('/sentiment', async (req, res) => {
     });
 
     // Map the emotion labels to mood emojis
-    const emotionToMood = {
+    const emotionToMood: { [key: string]: string } = {
       'joy': '😊',
       'sadness': '😢',
       'anger': '😡',
@@ -74,7 +74,7 @@ app.post('/sentiment', async (req, res) => {
 });
 
 // Crisis alert endpoint
-const crisisAlertHandler: RequestHandler = async (req, res) => {
+const crisisAlertHandler = async (req: Request, res: Response) => {
   try {
     const { username, latitude, longitude } = req.body;
     console.log('Received crisis alert request:', { username, latitude, longitude });
