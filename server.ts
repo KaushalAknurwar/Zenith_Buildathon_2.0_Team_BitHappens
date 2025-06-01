@@ -5,7 +5,7 @@ import twilio from 'twilio';
 
 const app = express();
 const router: Router = express.Router();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 
 // Twilio configuration
 const accountSid = 'AC0b077a09883015f99d299d3f6b6ec088';
@@ -40,8 +40,6 @@ const crisisAlertHandler: RequestHandler = async (req, res) => {
     // Recipient numbers
     const recipients = [
       '+918788293663'
-      
-     
     ];
 
     // Send SMS to all recipients
