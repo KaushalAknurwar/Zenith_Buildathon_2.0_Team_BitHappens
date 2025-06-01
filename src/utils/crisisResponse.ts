@@ -50,7 +50,7 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
     console.log('Sending crisis alert with coordinates:', coords);
     
     try {
-      // Try to use the local API server first
+      // Try to use the API server directly first
       const response = await fetch('http://localhost:3002/crisis-alert', {
         method: 'POST',
         headers: {
@@ -75,12 +75,42 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
         message: 'Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=' + coords.lat + ',' + coords.lng
       };
     } catch (apiError) {
-      console.warn("Could not reach API server, using fallback:", apiError);
-      // Fallback for demo purposes
-      return {
-        success: true,
-        message: 'Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=' + coords.lat + ',' + coords.lng
-      };
+      console.warn("Could not reach API server directly, trying through main server:", apiError);
+      
+      try {
+        // Try through the main server proxy
+        const response = await fetch('/api/crisis-alert', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username,
+            latitude: coords.lat,
+            longitude: coords.lng,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to send crisis alert');
+        }
+
+        console.log("✅ Crisis alert sent successfully through proxy:", data);
+        return {
+          success: true,
+          message: 'Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=' + coords.lat + ',' + coords.lng
+        };
+      } catch (proxyError) {
+        console.warn("Could not reach API through proxy, using fallback:", proxyError);
+        
+        // Fallback for demo purposes
+        return {
+          success: true,
+          message: 'Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=' + coords.lat + ',' + coords.lng
+        };
+      }
     }
   } catch (err) {
     console.error("❌ Failed to send crisis alert:", err);

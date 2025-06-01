@@ -4,12 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm run api\" \"vite\"",
+    "dev": "vite",
     "build": "tsc && vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "node --loader ts-node/esm server.ts",
+    "server": "node server.js",
     "api": "node src/api/server.js",
     "start": "npm run build && node server.js"
   },

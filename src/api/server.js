@@ -2,8 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -105,6 +110,12 @@ app.post('/generate-image', (req, res) => {
   }
 });
 
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({ status: 'API server is running' });
+});
+
 app.listen(PORT, () => {
   console.log(`API server running on port ${PORT}`);
+  console.log(`API endpoints available at http://localhost:${PORT}`);
 });

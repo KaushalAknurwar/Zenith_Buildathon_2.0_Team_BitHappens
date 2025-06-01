@@ -12,7 +12,7 @@ export const generateImage = async ({
   negative_prompt
 }: ImageGenerationOptions) => {
   try {
-    // Try to call the local API server first
+    // Try to call the API server directly first
     try {
       const response = await axios.post('http://localhost:3002/generate-image', {
         prompt,
@@ -20,10 +20,23 @@ export const generateImage = async ({
         negative_prompt
       });
       return response.data.imageUrl;
-    } catch (localError) {
-      console.warn("Could not reach local API server, using fallback:", localError);
-      // Fallback to Unsplash if the API server is not running
-      return `https://source.unsplash.com/random/800x600/?${encodeURIComponent(prompt)}`;
+    } catch (directError) {
+      console.warn("Could not reach API server directly, trying through main server:", directError);
+      
+      // Try through the main server proxy
+      try {
+        const response = await axios.post('/api/generate-image', {
+          prompt,
+          image_generator_version,
+          negative_prompt
+        });
+        return response.data.imageUrl;
+      } catch (proxyError) {
+        console.warn("Could not reach API through proxy, using fallback:", proxyError);
+        
+        // Fallback to Unsplash if both attempts fail
+        return `https://source.unsplash.com/random/800x600/?${encodeURIComponent(prompt)}`;
+      }
     }
   } catch (error) {
     console.error("Error generating image:", error);
