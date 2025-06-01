@@ -15,8 +15,8 @@ const port = process.env.PORT || 3002;
 const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 // Twilio configuration
-const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID || 'AC0b077a09883015f99d299d3f6b6ec088';
-const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN || 'c62b2c41ffedc0cc5ae1cc2740219846';
+const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID || 'YOUR_TWILLIO_SID';
+const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN || 'YOUR_TWILLIO_AUTH_TOKEN';
 const client = twilio(accountSid, authToken);
 
 // Middleware
@@ -90,14 +90,14 @@ const crisisAlertHandler = async (req: Request, res: Response) => {
 
     // Recipient numbers
     const recipients = [
-      '+918788293663'
+      'YOUR_NUMBER'
     ];
 
     // Send SMS to all recipients
     const smsPromises = recipients.map(to => 
       client.messages.create({
         body: emergencyMessage,
-        from: '+17753681889',
+        from: 'YOUR_TWILLIO_NUMBER',
         to
       })
     );
@@ -108,7 +108,7 @@ const crisisAlertHandler = async (req: Request, res: Response) => {
     const whatsappPromises = recipients.map(to => 
       client.messages.create({
         body: emergencyMessage,
-        from: 'whatsapp:+14155238886',
+        from: 'whatsapp:YOUR_WHATSAPP_TWILLIO_NUMBER',
         to: `whatsapp:${to}`
       })
     );
@@ -140,14 +140,14 @@ router.post('/emergency', async (req, res) => {
 
     // Recipient numbers
     const recipients = [
-      '+918788293663'
+      'YOUR_NUMBER'
     ];
 
     // Send SMS to all recipients
     const smsPromises = recipients.map(to => 
       client.messages.create({
         body: messageBody,
-        from: '+17753681889',
+        from: 'YOUR_TWILLIO_NUMBER',
         to
       })
     );
@@ -157,7 +157,7 @@ router.post('/emergency', async (req, res) => {
     const whatsappPromises = recipients.map(to => 
       client.messages.create({
         body: messageBody,
-        from: 'whatsapp:+14155238886',
+        from: 'whatsapp:YOUR_WHATSAPP_TWILLIO_NUMBER',
         to: `whatsapp:${to}`
       })
     );
@@ -188,8 +188,8 @@ if (process.env.NODE_ENV !== 'production') {
     console.log(`Server running on port ${port}`);
     console.log('Twilio configuration:', {
       accountSid: accountSid.substring(0, 5) + '...',
-      fromNumber: '+17753681889',
-      toNumber: '+918788293663'
+      fromNumber: 'YOUR_TWILLIO_NUMBER',
+      toNumber: 'YOUR_NUMBER'
     });
   });
 
