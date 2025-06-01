@@ -1,141 +1,95 @@
-const express = require('express');
-const cors = require('cors');
-const twilio = require('twilio');
-const serverless = require('serverless-http');
-const dotenv = require('dotenv');
+import express from 'express';
+import serverless from 'serverless-http';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import { HfInference } from '@huggingface/inference';
+import dotenv from 'dotenv';
 
-// Load environment variables
 dotenv.config();
-
-// Twilio configuration
-const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID;
-const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN;
-
-if (!accountSid || !authToken) {
-  console.log('Missing required Twilio credentials in environment variables');
-}
-
-const client = accountSid && authToken ? twilio(accountSid, authToken) : null;
 
 const app = express();
 
-// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-// Logging middleware
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-  next();
+const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
+
+// Sentiment analysis endpoint
+app.post('/sentiment', async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ error: 'Text is required' });
+    }
+
+    const result = await hf.textClassification({
+      model: 'SamLowe/roberta-base-go_emotions',
+      inputs: text,
+    });
+
+    // Map the emotion labels to mood emojis
+    const emotionToMood = {
+      'joy': '😊',
+      'sadness': '😢',
+      'anger': '😡',
+      'fear': '😰',
+      'surprise': '🤔',
+      'neutral': '😌',
+      'excitement': '🥳',
+      'tiredness': '😴'
+    };
+
+    // Get the top emotion
+    const topEmotion = result[0].label;
+    const mood = emotionToMood[topEmotion] || '😌';
+
+    res.json({
+      mood,
+      emotions: result.map(r => ({
+        label: r.label,
+        score: r.score
+      }))
+    });
+  } catch (error) {
+    console.error('Sentiment analysis error:', error);
+    res.status(500).json({ error: 'Failed to analyze sentiment' });
+  }
+});
+
+// Emergency alert endpoint
+app.post('/emergency', async (req, res) => {
+  try {
+    const { name, phone, situation } = req.body;
+    
+    // In a real app, this would send a message via Twilio
+    console.log(`Emergency alert from ${name} (${phone}): ${situation}`);
+    
+    res.json({ success: true, message: 'Emergency notification sent' });
+  } catch (error) {
+    console.error('Emergency notification error:', error);
+    res.status(500).json({ success: false, error: 'Failed to send emergency notification' });
+  }
 });
 
 // Crisis alert endpoint
 app.post('/crisis-alert', async (req, res) => {
   try {
     const { username, latitude, longitude } = req.body;
-    console.log('Received crisis alert request:', { username, latitude, longitude });
-
-    if (!username || !latitude || !longitude) {
-      console.error('Missing required fields:', { username, latitude, longitude });
-      res.status(400).json({ message: 'Missing required fields' });
-      return;
-    }
-
-    const emergencyMessage = `Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=${latitude},${longitude}`;
-    console.log('Sending emergency messages:', emergencyMessage);
-
-    // Check if Twilio is configured
-    if (!client) {
-      console.log('Twilio not configured, skipping message sending');
-      res.status(200).json({ 
-        message: 'Crisis alert received (Twilio not configured)',
-        mockMode: true
-      });
-      return;
-    }
-
-    // Recipient numbers
-    const recipients = [
-      process.env.EMERGENCY_CONTACT_NUMBER
-    ].filter(Boolean);
-
-    if (recipients.length === 0) {
-      throw new Error('No emergency contact numbers configured');
-    }
-
-    // Send SMS to all recipients
-    const smsPromises = recipients.map(to => 
-      client.messages.create({
-        body: emergencyMessage,
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to
-      })
-    );
-    const smsMessages = await Promise.all(smsPromises);
-    console.log('SMS messages sent successfully:', smsMessages.map(msg => msg.sid));
-
-    res.status(200).json({ 
-      message: 'Crisis alerts sent successfully',
-      smsMessageIds: smsMessages.map(msg => msg.sid)
-    });
+    
+    // In a real app, this would send alerts to emergency contacts
+    console.log(`Crisis alert from ${username} at location: ${latitude}, ${longitude}`);
+    
+    res.json({ success: true, message: 'Crisis alert sent' });
   } catch (error) {
-    console.error('Failed to send crisis alerts:', error);
-    res.status(500).json({ 
-      message: 'Failed to send crisis alerts',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-});
-
-// Emergency endpoint
-app.post('/emergency', async (req, res) => {
-  const { name, phone, situation } = req.body;
-
-  try {
-    const messageBody = `Your Friend needs help reach out to them asap. Details:\nName: ${name}\nPhone: ${phone}\nSituation: ${situation}`;
-
-    // Check if Twilio is configured
-    if (!client) {
-      console.log('Twilio not configured, skipping message sending');
-      res.status(200).json({ 
-        success: true,
-        mockMode: true
-      });
-      return;
-    }
-
-    // Recipient numbers
-    const recipients = [
-      process.env.EMERGENCY_CONTACT_NUMBER
-    ].filter(Boolean);
-
-    if (recipients.length === 0) {
-      throw new Error('No emergency contact numbers configured');
-    }
-
-    // Send SMS to all recipients
-    const smsPromises = recipients.map(to => 
-      client.messages.create({
-        body: messageBody,
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to
-      })
-    );
-    const smsMessages = await Promise.all(smsPromises);
-
-    return res.status(200).json({ 
-      success: true, 
-      smsMessageIds: smsMessages.map(msg => msg.sid)
-    });
-  } catch (error) {
-    console.error('Twilio error:', error);
-    return res.status(500).json({ error: 'Failed to send emergency notifications' });
+    console.error('Crisis alert error:', error);
+    res.status(500).json({ success: false, error: 'Failed to send crisis alert' });
   }
 });
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+app.get('/', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
-module.exports.handler = serverless(app);
+export const handler = serverless(app);

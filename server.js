@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { HfInference } from '@huggingface/inference';
 import dotenv from 'dotenv';
+import serverless from 'serverless-http';
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -23,7 +24,7 @@ const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 // API Routes
 app.use('/api', (req, res, next) => {
 	const apiPath = join(__dirname, 'src', 'pages', 'api');
-	import(join(apiPath, `${req.path}.ts`))
+	import(join(apiPath, `${req.path}.js`))
 		.then(module => {
 			module.default(req, res);
 		})
@@ -80,6 +81,12 @@ app.get('*', (req, res) => {
 	res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(PORT, () => {
-	console.log(`Server running on port ${PORT}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+// For Netlify Functions
+export const handler = serverless(app);
