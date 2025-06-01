@@ -49,9 +49,9 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
     try {
         console.log('Sending crisis alert with coordinates:', coords);
         
+        // Try using Netlify function directly
         try {
-            // Try to use the API server directly first
-            const response = await fetch('http://localhost:3002/crisis-alert', {
+            const response = await fetch('/.netlify/functions/api/crisis-alert', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,11 +74,11 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
                 success: true,
                 message: 'Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=' + coords.lat + ',' + coords.lng
             };
-        } catch (apiError) {
-            console.warn("Could not reach API server directly, trying through main server:", apiError);
+        } catch (netlifyError) {
+            console.warn("Could not reach Netlify function, trying API endpoint:", netlifyError);
             
             try {
-                // Try through the main server proxy
+                // Try through the API endpoint
                 const response = await fetch('/api/crisis-alert', {
                     method: 'POST',
                     headers: {
@@ -97,13 +97,13 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
                     throw new Error(data.message || 'Failed to send crisis alert');
                 }
 
-                console.log("✅ Crisis alert sent successfully through proxy:", data);
+                console.log("✅ Crisis alert sent successfully through API:", data);
                 return {
                     success: true,
                     message: 'Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=' + coords.lat + ',' + coords.lng
                 };
-            } catch (proxyError) {
-                console.warn("Could not reach API through proxy, using fallback:", proxyError);
+            } catch (apiError) {
+                console.warn("Could not reach API endpoint, using fallback:", apiError);
                 
                 // Fallback for demo purposes
                 return {

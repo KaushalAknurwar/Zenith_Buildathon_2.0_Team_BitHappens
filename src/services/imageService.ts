@@ -12,18 +12,18 @@ export const generateImage = async ({
   negative_prompt
 }: ImageGenerationOptions) => {
   try {
-    // Try to call the API server directly first
+    // Try Netlify function directly first
     try {
-      const response = await axios.post('http://localhost:3002/generate-image', {
+      const response = await axios.post('/.netlify/functions/api/generate-image', {
         prompt,
         image_generator_version,
         negative_prompt
       });
       return response.data.imageUrl;
-    } catch (directError) {
-      console.warn("Could not reach API server directly, trying through main server:", directError);
+    } catch (netlifyError) {
+      console.warn("Could not reach Netlify function, trying API endpoint:", netlifyError);
       
-      // Try through the main server proxy
+      // Try through the API endpoint
       try {
         const response = await axios.post('/api/generate-image', {
           prompt,
@@ -31,8 +31,8 @@ export const generateImage = async ({
           negative_prompt
         });
         return response.data.imageUrl;
-      } catch (proxyError) {
-        console.warn("Could not reach API through proxy, using fallback:", proxyError);
+      } catch (apiError) {
+        console.warn("Could not reach API endpoint, using fallback:", apiError);
         
         // Fallback to Unsplash if both attempts fail
         return `https://source.unsplash.com/random/800x600/?${encodeURIComponent(prompt)}`;
@@ -40,6 +40,7 @@ export const generateImage = async ({
     }
   } catch (error) {
     console.error("Error generating image:", error);
-    throw new Error("Failed to generate image. Please try again.");
+    // Final fallback
+    return `https://source.unsplash.com/random/800x600/?${encodeURIComponent(prompt)}`;
   }
-};
+}

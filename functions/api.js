@@ -13,6 +13,8 @@ export async function handler(event, context) {
     }
   }
   
+  console.log(`API Request: ${method} ${path}`, body);
+  
   // Handle different API endpoints
   if (path === 'generate-image') {
     const { prompt } = body;

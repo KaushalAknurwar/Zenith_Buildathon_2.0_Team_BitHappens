@@ -25,6 +25,8 @@ app.use(express.static(join(__dirname, 'dist')));
 // API Routes - Forward to the API server or Netlify Functions
 app.use('/api', async (req, res) => {
   try {
+    console.log(`API Request: ${req.method} ${req.path}`);
+    
     // Import the API handlers from src/api/server.js
     const apiModule = await import('./src/api/server.js');
     
