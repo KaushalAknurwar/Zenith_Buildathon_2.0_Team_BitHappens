@@ -4,8 +4,8 @@ const twilio = require('twilio');
 const serverless = require('serverless-http');
 
 // Twilio configuration
-const accountSid = 'AC0b077a09883015f99d299d3f6b6ec088';
-const authToken = 'c62b2c41ffedc0cc5ae1cc2740219846';
+const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID || 'AC0b077a09883015f99d299d3f6b6ec088';
+const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN || 'c62b2c41ffedc0cc5ae1cc2740219846';
 const client = twilio(accountSid, authToken);
 
 const app = express();
@@ -124,4 +124,48 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-exports.handler = serverless(app);
+// Sentiment analysis endpoint
+app.post('/sentiment', async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ error: 'Text is required' });
+    }
+
+    // Mock sentiment analysis response since we can't use HuggingFace in Netlify Functions
+    const emotions = [
+      { label: 'joy', score: 0.8 },
+      { label: 'neutral', score: 0.1 },
+      { label: 'surprise', score: 0.05 },
+      { label: 'sadness', score: 0.03 },
+      { label: 'anger', score: 0.02 }
+    ];
+
+    // Map the emotion labels to mood emojis
+    const emotionToMood = {
+      'joy': '😊',
+      'sadness': '😢',
+      'anger': '😡',
+      'fear': '😰',
+      'surprise': '🤔',
+      'neutral': '😌',
+      'excitement': '🥳',
+      'tiredness': '😴'
+    };
+
+    // Get the top emotion
+    const topEmotion = emotions[0].label;
+    const mood = emotionToMood[topEmotion] || '😌';
+
+    res.json({
+      mood,
+      emotions: emotions
+    });
+  } catch (error) {
+    console.error('Sentiment analysis error:', error);
+    res.status(500).json({ error: 'Failed to analyze sentiment' });
+  }
+});
+
+module.exports.handler = serverless(app);
