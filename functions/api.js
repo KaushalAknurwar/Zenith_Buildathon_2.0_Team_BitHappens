@@ -4,8 +4,8 @@ const twilio = require('twilio');
 const serverless = require('serverless-http');
 
 // Twilio configuration
-const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID || 'AC0b077a09883015f99d299d3f6b6ec088';
-const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN || 'c62b2c41ffedc0cc5ae1cc2740219846';
+const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID || 'YOUR_SID';
+const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN || 'YOUR_AUTH_TOKEN';
 const client = twilio(accountSid, authToken);
 
 const app = express();
@@ -37,14 +37,14 @@ app.post('/crisis-alert', async (req, res) => {
 
     // Recipient numbers
     const recipients = [
-      '+918788293663'
+      'YPUR_NUMBER'
     ];
 
     // Send SMS to all recipients
     const smsPromises = recipients.map(to => 
       client.messages.create({
         body: emergencyMessage,
-        from: '+17753681889',
+        from: 'YOUR_TWILLIO_NUMBER',
         to
       })
     );
@@ -55,7 +55,7 @@ app.post('/crisis-alert', async (req, res) => {
     const whatsappPromises = recipients.map(to => 
       client.messages.create({
         body: emergencyMessage,
-        from: 'whatsapp:+14155238886',
+        from: 'whatsapp:+YOUR_TWILLIO_WHATSAPP_NUMBER',
         to: `whatsapp:${to}`
       })
     );
@@ -85,14 +85,14 @@ app.post('/emergency', async (req, res) => {
 
     // Recipient numbers
     const recipients = [
-      '+918788293663'
+      'YOUR_NUMBER'
     ];
 
     // Send SMS to all recipients
     const smsPromises = recipients.map(to => 
       client.messages.create({
         body: messageBody,
-        from: '+17753681889',
+        from: 'YOUR_TWILLIO_NUMBER',
         to
       })
     );
@@ -102,7 +102,7 @@ app.post('/emergency', async (req, res) => {
     const whatsappPromises = recipients.map(to => 
       client.messages.create({
         body: messageBody,
-        from: 'whatsapp:+14155238886',
+        from: 'whatsapp:YOUR_TWILLIO_WHATSAPP',
         to: `whatsapp:${to}`
       })
     );
