@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npx vite",
-    "build": "npx vite build",
-    "build:dev": "npx vite build --mode development",
+    "dev": "concurrently \"npm run server\" \"npx vite\"",
+    "build": "tsc && vite build",
+    "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "npx vite preview",
+    "preview": "vite preview",
     "server": "node --loader ts-node/esm server.ts",
-    "start": "npm run build && npm run server"
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -60,6 +60,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.7",
@@ -70,6 +71,7 @@
     "iconv-lite": "^0.6.3",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
+    "netlify-functions": "^0.0.0",
     "next-themes": "^0.3.0",
     "node-fetch": "^3.3.2",
     "openai": "^4.80.0",

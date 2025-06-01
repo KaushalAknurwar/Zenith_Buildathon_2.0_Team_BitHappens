@@ -49,7 +49,7 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
   try {
     console.log('Sending crisis alert with coordinates:', coords);
     
-    const response = await fetch('http://localhost:3001/api/crisis-alert', {
+    const response = await fetch('/.netlify/functions/api/crisis-alert', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -93,4 +93,4 @@ export const handleCrisisSituation = async (username: string): Promise<{ success
       message: 'Your Friend needs help reach out to them asap'
     };
   }
-}; 
+};
