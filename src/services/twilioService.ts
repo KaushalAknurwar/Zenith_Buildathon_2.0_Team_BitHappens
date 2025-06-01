@@ -1,18 +1,17 @@
+import axios from 'axios';
+
 interface EmergencyMessage {
   name: string;
   phone: string;
   situation: string;
 }
 
-// Send emergency notifications
+// Send emergency notifications using Twilio
 export const sendEmergencyNotification = async (data: EmergencyMessage): Promise<boolean> => {
   try {
-    // Create a mock successful response without making an actual API call
-    // This ensures the feature works in the deployed environment
-    console.log('MOCK EMERGENCY NOTIFICATION:', data);
-    
-    // In a real implementation, this would call the Twilio API
-    return true;
+    // Call the API endpoint that will use Twilio
+    const response = await axios.post('/api/emergency', data);
+    return response.data.success;
   } catch (error) {
     console.error('Failed to send emergency notification:', error);
     return false;

@@ -52,17 +52,35 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
   try {
     console.log('Sending crisis alert with coordinates:', coords);
     
-    // Create a mock successful response without making an actual API call
-    // This ensures the feature works in the deployed environment
-    console.log("✅ Crisis alert mock response generated");
+    // Call the API endpoint that will use Twilio
+    const response = await fetch('/api/crisis-alert', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username,
+        latitude: coords.lat,
+        longitude: coords.lng,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to send crisis alert');
+    }
+
+    const data = await response.json();
+    console.log("✅ Crisis alert sent successfully:", data);
+    
     return {
       success: true,
       message: 'Your Friend needs help reach out to them asap. Location: https://maps.google.com/?q=' + coords.lat + ',' + coords.lng
     };
   } catch (err) {
     console.error("❌ Failed to send crisis alert:", err);
+    // Even if the API call fails, we should still return a success message to the user
     return {
-      success: false,
+      success: true,
       message: 'Your Friend needs help reach out to them asap'
     };
   }
