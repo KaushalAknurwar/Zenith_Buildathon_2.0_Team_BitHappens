@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node --loader ts-node/esm server.ts",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "postinstall": "mkdir -p functions && cp -r server.js functions/api.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
