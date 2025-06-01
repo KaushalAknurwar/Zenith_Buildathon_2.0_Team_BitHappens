@@ -5,17 +5,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3002;
-
-// Enable CORS for all routes
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-app.use(bodyParser.json());
-
 // Simple sentiment analysis endpoint
 export const sentiment = (req, res) => {
   try {
@@ -111,7 +100,19 @@ export const generateImage = (req, res) => {
 };
 
 // Only start the server if this file is run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url.endsWith(process.argv[1])) {
+  const app = express();
+  const PORT = process.env.PORT || 3002;
+
+  // Enable CORS for all routes
+  app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
+  app.use(bodyParser.json());
+
+  // Register API endpoints
   app.post('/sentiment', sentiment);
   app.post('/crisis-alert', crisisAlert);
   app.post('/emergency', emergency);
@@ -122,6 +123,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     res.json({ status: 'API server is running' });
   });
 
+  // Start the server
   app.listen(PORT, () => {
     console.log(`API server running on port ${PORT}`);
   });

@@ -1,9 +1,20 @@
 export async function handler(event, context) {
-  // Mock API response for Netlify Functions
+  // Parse the request path and method
   const path = event.path.replace('/.netlify/functions/api/', '');
+  const method = event.httpMethod;
   
+  // Parse the request body if it exists
+  let body = {};
+  if (event.body) {
+    try {
+      body = JSON.parse(event.body);
+    } catch (error) {
+      console.error('Error parsing request body:', error);
+    }
+  }
+  
+  // Handle different API endpoints
   if (path === 'generate-image') {
-    const body = JSON.parse(event.body || '{}');
     const { prompt } = body;
     
     if (!prompt) {
@@ -18,6 +29,10 @@ export async function handler(event, context) {
     
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ 
         success: true, 
         imageUrl 
@@ -26,11 +41,17 @@ export async function handler(event, context) {
   }
   
   if (path === 'crisis-alert') {
-    const body = JSON.parse(event.body || '{}');
     const { username, latitude, longitude } = body;
+    
+    // Log the crisis alert (in a real app, this would send notifications)
+    console.log(`CRISIS ALERT: User ${username} at location ${latitude}, ${longitude}`);
     
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ 
         success: true, 
         message: 'Crisis alert sent successfully' 
@@ -39,21 +60,31 @@ export async function handler(event, context) {
   }
   
   if (path === 'emergency') {
-    const body = JSON.parse(event.body || '{}');
+    const { name, phone, situation } = body;
+    
+    // Log the emergency request (in a real app, this would use Twilio)
+    console.log(`EMERGENCY REQUEST: ${name} (${phone}) - ${situation}`);
     
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ success: true })
     };
   }
   
   if (path === 'sentiment') {
-    const body = JSON.parse(event.body || '{}');
     const { text } = body;
     
     if (!text) {
       return {
         statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify({ error: 'Text is required' })
       };
     }
@@ -75,6 +106,10 @@ export async function handler(event, context) {
     
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({
         mood,
         emotions: [
@@ -87,8 +122,26 @@ export async function handler(event, context) {
     };
   }
   
+  // Handle CORS preflight requests
+  if (method === 'OPTIONS') {
+    return {
+      statusCode: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
+      },
+      body: ''
+    };
+  }
+  
+  // Default response for unhandled endpoints
   return {
-    statusCode: 200,
-    body: JSON.stringify({ message: "API endpoint" })
+    statusCode: 404,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    },
+    body: JSON.stringify({ error: 'API endpoint not found' })
   };
 }
