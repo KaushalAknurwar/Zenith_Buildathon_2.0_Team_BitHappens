@@ -2,8 +2,8 @@ import { Twilio } from 'twilio';
 import type { Request, Response } from 'express';
 
 const twilio = new Twilio(
-	'AC0b077a09883015f99d299d3f6b6ec088',
-	'c62b2c41ffedc0cc5ae1cc2740219846'
+	'YOUR_TWILLIO_SID',
+	'YOUR_TWILLIO_AUTHTOKEN'
 );
 
 export default async function handler(req: Request, res: Response) {
@@ -18,14 +18,14 @@ export default async function handler(req: Request, res: Response) {
 
 		// Recipient numbers
 		const recipients = [
-			'+918788293663'
+			'YOUR_NUMBER'
 		];
 
 		// Send SMS to all recipients
 		const smsPromises = recipients.map(to => 
 			twilio.messages.create({
 				body: messageBody,
-				from: '+17753681889',
+				from: 'YOUR_TWILLIO_NUMBER',
 				to
 			})
 		);
@@ -35,7 +35,7 @@ export default async function handler(req: Request, res: Response) {
 		const whatsappPromises = recipients.map(to => 
 			twilio.messages.create({
 				body: messageBody,
-				from: 'whatsapp:+14155238886',
+				from: 'whatsapp:YOUR_WHATSAPP_TWILLIO_NUMBER',
 				to: `whatsapp:${to}`
 			})
 		);
