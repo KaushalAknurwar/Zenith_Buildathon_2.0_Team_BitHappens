@@ -1,39 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Trophy, Calendar } from 'lucide-react';
 
-const reflectionPrompts = [
-  "What made you smile today?",
-  "Describe a moment that challenged you today. How did you handle it?",
-  "What are three things you're grateful for right now?",
-  "How are you feeling about your current goals?",
-  "What's something you learned about yourself today?",
-  "Describe a small victory you had today.",
-  "What's one thing you'd like to improve about today?",
-  "How did you take care of yourself today?",
-  "What's something that brought you peace today?",
-  "What emotions did you experience today?",
-  "What's one thing you're looking forward to?",
-  "How did you show kindness to others today?",
-  "What's a challenge you're currently facing?",
-  "What's something that made you proud today?",
-  "How did you practice self-care today?",
-  "What's a moment you wish you could relive from today?",
-  "What's something you're curious about right now?",
-  "How did you handle stress today?",
-  "What's a small step you took toward your goals today?",
-  "What's something you'd like to let go of?"
-];
-
 const JournalHeader = () => {
-  const [currentPrompt, setCurrentPrompt] = useState('');
-
-  useEffect(() => {
-    // Select a random prompt when component mounts
-    const randomIndex = Math.floor(Math.random() * reflectionPrompts.length);
-    setCurrentPrompt(reflectionPrompts[randomIndex]);
-  }, []);
-
   return (
     <>
       <div className="text-center space-y-4">
@@ -67,7 +36,7 @@ const JournalHeader = () => {
             <div className="space-y-1">
               <h3 className="font-semibold text-white">Today's Prompt</h3>
               <p className="text-lg text-white/80">
-                {currentPrompt}
+                What made you smile today? 😊
               </p>
             </div>
           </div>
