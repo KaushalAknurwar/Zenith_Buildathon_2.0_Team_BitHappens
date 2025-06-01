@@ -83,6 +83,28 @@ app.post('/emergency', (req, res) => {
   }
 });
 
+// Image generation endpoint
+app.post('/generate-image', (req, res) => {
+  try {
+    const { prompt } = req.body;
+    
+    if (!prompt) {
+      return res.status(400).json({ error: 'Prompt is required' });
+    }
+    
+    // Return a placeholder image URL based on the prompt
+    const imageUrl = `https://source.unsplash.com/random/800x600/?${encodeURIComponent(prompt)}`;
+    
+    res.json({ 
+      success: true, 
+      imageUrl 
+    });
+  } catch (error) {
+    console.error('Image generation error:', error);
+    res.status(500).json({ error: 'Failed to generate image' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`API server running on port ${PORT}`);
 });
