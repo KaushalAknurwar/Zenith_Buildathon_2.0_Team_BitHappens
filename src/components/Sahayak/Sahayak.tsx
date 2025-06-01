@@ -50,81 +50,81 @@ const Sahayak: React.FC = () => {
 
 		script.innerHTML = `
 			!function(window){
-				const host="https://labs.heygen.com",
-				url=host+"/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJBbm5fVGhlcmFwaXN0X3B1YmxpYyIsInByZXZpZXdJbWciOiJodHRwczovL2ZpbGVzMi5oZXlnZW4uYWkvYXZhdGFyL3YzLzc1ZTBhODdiN2ZkOTRmMDk4MWZmMzk4YjU5M2RkNDdmXzQ1NTcwL3ByZXZpZXdfdGFsa180LndlYnAiLCJuZWVkUmVtb3ZlQmFja2dyb3VuZCI6ZmFsc2UsImtub3dsZWRnZUJhc2VJZCI6IjRlYmQ0MTFjMWZhMTQ2YjhhNTc4OGUzNDliZTM5NWZkIiwidXNlcm5hbWUiOiIxMmI1NmRhODA5MDk0MDM1YmU3MDI0NDBhMjczMTVlYyJ9&inIFrame=1";
+  				const host = "https://labs.heygen.com";
+  				const url = host + "/guest/streaming-embed?share=eyJxdWFsaXR5IjoiaGlnaCIsImF2YXRhck5hbWUiOiJBbm5fVGhlcmFwaXN0X3B1YmxpYyIsInBy%0D%0AZXZpZXdJbWciOiJodHRwczovL2ZpbGVzMi5oZXlnZW4uYWkvYXZhdGFyL3YzLzc1ZTBhODdiN2Zk%0D%0AOTRmMDk4MWZmMzk4YjU5M2RkNDdmXzQ1NTcwL3ByZXZpZXdfdGFsa180LndlYnAiLCJuZWVkUmVt%0D%0Ab3ZlQmFja2dyb3VuZCI6ZmFsc2UsImtub3dsZWRnZUJhc2VJZCI6IjcwNTE1YWE3Mzc1ZDRlOWY5%0D%0AZTI1ZTA2ZDZiMDAyYmIyIiwidXNlcm5hbWUiOiI4OGY1ZGIwZTEwNzk0MjcyYmVjNzJlMjA1YWQ2%0D%0AODI4NyJ9&inIFrame=1";
 
-				const wrapDiv = document.createElement("div");
-				wrapDiv.id = "heygen-streaming-embed";
+  				const clientWidth = document.body.clientWidth;
+  				const wrapDiv = document.createElement("div");
+  				wrapDiv.id = "heygen-streaming-embed";
 
-				const container = document.createElement("div");
-				container.id = "heygen-streaming-container";
+  				const container = document.createElement("div");
+  				container.id = "heygen-streaming-container";
 
-				const stylesheet = document.createElement("style");
-				stylesheet.innerHTML = \`
-					#heygen-streaming-embed {
-						z-index: 9999;
-						position: fixed;
-						left: 40px;
-						bottom: 40px;
-						width: 200px;
-						height: 200px;
-						border-radius: 50%;
-						border: 2px solid #fff;
-						box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);
-						transition: all linear 0.1s;
-						overflow: hidden;
-						opacity: 0;
-						visibility: hidden;
-					}
-					#heygen-streaming-embed.show {
-						opacity: 1;
-						visibility: visible;
-					}
-					#heygen-streaming-embed.expand {
-						${dynamicStyles}
-						border: 0;
-						border-radius: 8px;
-					}
-					#heygen-streaming-container {
-						width: 100%;
-						height: 100%;
-					}
-					#heygen-streaming-container iframe {
-						width: 100%;
-						height: 100%;
-						border: 0;
-					}
+  const stylesheet = document.createElement("style");
+  stylesheet.innerHTML = \`
+				#heygen-streaming-embed {
+					z-index: 9999;
+					position: fixed;
+					left: 40px;
+					bottom: 40px;
+					width: 200px;
+					height: 200px;
+					border-radius: 50%;
+					border: 2px solid #fff;
+					box-shadow: 0px 8px 24px 0px rgba(0, 0, 0, 0.12);
+					transition: all linear 0.1s;
+					overflow: hidden;
+					opacity: 0;
+					visibility: hidden;
+				}
+				#heygen-streaming-embed.show {
+					opacity: 1;
+					visibility: visible;
+				}
+				#heygen-streaming-embed.expand {
+					${clientWidth < 540 ? "height: 266px; width: 96%; left: 50%; transform: translateX(-50%);" : "height: 366px; width: calc(366px * 16 / 9);"}
+					border: 0;
+					border-radius: 8px;
+				}
+				#heygen-streaming-container {
+					width: 100%;
+					height: 100%;
+				}
+				#heygen-streaming-container iframe {
+					width: 100%;
+					height: 100%;
+					border: 0;
+				}
 				\`;
 
-				const iframe = document.createElement("iframe");
-				iframe.allowFullscreen = false;
-				iframe.title = "Streaming Embed";
-				iframe.role = "dialog";
-				iframe.allow = "microphone";
-				iframe.src = url;
+  const iframe = document.createElement("iframe");
+  iframe.allowFullscreen = false;
+  iframe.title = "Streaming Embed";
+  iframe.role = "dialog";
+  iframe.allow = "microphone";
+  iframe.src = url;
 
-				let visible = false, initial = false;
+  let visible = false, initial = false;
+  window.addEventListener("message", (e) => {
+    if (e.origin === host && e.data && e.data.type === "streaming-embed") {
+      if (e.data.action === "init") {
+        initial = true;
+        wrapDiv.classList.toggle("show", initial);
+      } else if (e.data.action === "show") {
+        visible = true;
+        wrapDiv.classList.toggle("expand", visible);
+      } else if (e.data.action === "hide") {
+        visible = false;
+        wrapDiv.classList.toggle("expand", visible);
+      }
+    }
+  });
 
-				window.addEventListener("message", (e) => {
-					if (e.origin === host && e.data?.type === "streaming-embed") {
-						if (e.data.action === "init") {
-							initial = true;
-							wrapDiv.classList.toggle("show", initial);
-						} else if (e.data.action === "show") {
-							visible = true;
-							wrapDiv.classList.toggle("expand", visible);
-						} else if (e.data.action === "hide") {
-							visible = false;
-							wrapDiv.classList.toggle("expand", visible);
-						}
-					}
-				});
-
-				container.appendChild(iframe);
-				wrapDiv.appendChild(stylesheet);
-				wrapDiv.appendChild(container);
-				document.body.appendChild(wrapDiv);
-			}(globalThis);
+  container.appendChild(iframe);
+  wrapDiv.appendChild(stylesheet);
+  wrapDiv.appendChild(container);
+  document.body.appendChild(wrapDiv);
+}(globalThis);
 		`;
 
 		document.body.appendChild(script);

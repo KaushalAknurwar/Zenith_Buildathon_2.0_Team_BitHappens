@@ -69,7 +69,7 @@ const ProfilePage = () => {
 
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto p-6 space-y-8 max-w-7xl">
       <ProfileHeader />
 
       {/* Profile Overview */}
@@ -79,7 +79,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Privacy Settings */}
-      <Card className="bg-white/10 backdrop-blur-lg border-white/20 p-6">
+      <Card className="bg-white/10 backdrop-blur-lg border-white/20 p-6 overflow-hidden">
         <PrivacySettings
           settings={privacySettings}
           onSettingChange={handleSettingChange}
@@ -87,50 +87,50 @@ const ProfilePage = () => {
       </Card>
 
       {/* Content Tabs */}
-      <Card className="bg-white/10 backdrop-blur-lg border-white/20">
+      <Card className="bg-white/10 backdrop-blur-lg border-white/20 overflow-hidden">
         <Tabs defaultValue="drawings" className="w-full">
           <TabsList className="grid w-full grid-cols-4 gap-4 p-4">
             <TabsTrigger 
               value="drawings" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-300"
+              className="data-[state=active]:bg-primary data-[state=active]:text-white transition-all duration-300 truncate"
             >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Drawings
+              <MessageSquare className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">Drawings</span>
             </TabsTrigger>
             <TabsTrigger 
               value="thoughts"
-              className="data-[state=active]:bg-duo-blue data-[state=active]:text-white transition-all duration-300"
+              className="data-[state=active]:bg-duo-blue data-[state=active]:text-white transition-all duration-300 truncate"
             >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Thoughts
+              <MessageSquare className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">Thoughts</span>
             </TabsTrigger>
             <TabsTrigger 
               value="voice"
-              className="data-[state=active]:bg-duo-green data-[state=active]:text-white transition-all duration-300"
+              className="data-[state=active]:bg-duo-green data-[state=active]:text-white transition-all duration-300 truncate"
             >
-              <Mic className="w-4 h-4 mr-2" />
-              Voice
+              <Mic className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">Voice</span>
             </TabsTrigger>
             <TabsTrigger 
               value="video"
-              className="data-[state=active]:bg-duo-orange data-[state=active]:text-white transition-all duration-300"
+              className="data-[state=active]:bg-duo-orange data-[state=active]:text-white transition-all duration-300 truncate"
             >
-              <Video className="w-4 h-4 mr-2" />
-              Video
+              <Video className="w-4 h-4 mr-2 flex-shrink-0" />
+              <span className="truncate">Video</span>
             </TabsTrigger>
           </TabsList>
 
-          <div className="p-4">
-            <TabsContent value="drawings">
+          <div className="p-4 overflow-hidden">
+            <TabsContent value="drawings" className="overflow-hidden">
               <DrawingsTab />
             </TabsContent>
-            <TabsContent value="thoughts">
+            <TabsContent value="thoughts" className="overflow-hidden">
               <ThoughtsTab />
             </TabsContent>
-            <TabsContent value="voice">
+            <TabsContent value="voice" className="overflow-hidden">
               <VoiceTab />
             </TabsContent>
-            <TabsContent value="video">
+            <TabsContent value="video" className="overflow-hidden">
               <VideoTab />
             </TabsContent>
           </div>
