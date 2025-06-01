@@ -17,7 +17,7 @@
   status = 200
 
 [dev]
-  command = "concurrently \"npm run server\" \"cd src/api && node server.js\" \"npm run dev\""
+  command = "npm run dev"
   targetPort = 8080
   port = 3000
   publish = "dist"

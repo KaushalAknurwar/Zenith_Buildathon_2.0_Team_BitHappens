@@ -183,7 +183,6 @@ const GoalTracker = () => {
                 <Progress 
                   value={goal.progress} 
                   className="h-2 bg-white/10"
-                  indicatorClassName="bg-gradient-to-r from-[#8B5CF6] to-[#D946EF]"
                 />
               </div>
               

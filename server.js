@@ -13,50 +13,28 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Enable CORS for all routes
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(join(__dirname, 'dist')));
 
-// API Routes - Forward to the API server or Netlify Functions
-app.use('/api', async (req, res) => {
-  try {
-    console.log(`API Request: ${req.method} ${req.path}`);
-    
-    // Import the API handlers from src/api/server.js
-    const apiModule = await import('./src/api/server.js');
-    
-    // Get the endpoint name from the path
-    const endpoint = req.path.substring(1); // Remove leading slash
-    
-    // Check if the handler exists
-    if (endpoint && typeof apiModule[endpoint] === 'function') {
-      // Call the appropriate handler
-      apiModule[endpoint](req, res);
-    } else {
-      // Special case for send-sms
-      if (endpoint === 'send-sms') {
-        apiModule.sendSMS(req, res);
-      } else {
-        res.status(404).json({ error: 'API endpoint not found' });
-      }
-    }
-  } catch (error) {
-    console.error('API routing error:', error);
-    res.status(500).json({ error: 'Internal server error', details: error.message });
-  }
+// API Routes
+app.use('/api', (req, res, next) => {
+  const apiPath = join(__dirname, 'src', 'pages', 'api');
+  import(join(apiPath, `${req.path}.ts`))
+    .then(module => {
+      module.default(req, res);
+    })
+    .catch(error => {
+      console.error('API route error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    });
 });
 
-// Serve frontend for all other routes
+// Serve frontend
 app.get('*', (req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
-// Start the server
 app.listen(PORT, () => {
-  console.log(`Main server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
