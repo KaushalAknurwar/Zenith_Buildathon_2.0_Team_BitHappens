@@ -4,7 +4,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 import { Save, Loader2, Paintbrush } from 'lucide-react';
 import { useJournal } from '@/contexts/JournalContext';
-import { generateImage } from '@/services/imageService.ts';
+import { generateImage } from '@/services/imageService';
 
 interface SatrangProps {
 	className?: string;
