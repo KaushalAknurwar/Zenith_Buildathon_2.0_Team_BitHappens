@@ -2,10 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const twilio = require('twilio');
 const serverless = require('serverless-http');
+const dotenv = require('dotenv');
+
+// Load environment variables
+dotenv.config();
 
 // Twilio configuration
-const accountSid = 'AC0b077a09883015f99d299d3f6b6ec088';
-const authToken = 'c62b2c41ffedc0cc5ae1cc2740219846';
+const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID;
+const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN;
+
+if (!accountSid || !authToken) {
+  throw new Error('Missing required Twilio credentials in environment variables');
+}
+
 const client = twilio(accountSid, authToken);
 
 const app = express();
@@ -37,14 +46,18 @@ app.post('/crisis-alert', async (req, res) => {
 
     // Recipient numbers
     const recipients = [
-      '+918788293663'
-    ];
+      process.env.EMERGENCY_CONTACT_NUMBER
+    ].filter(Boolean);
+
+    if (recipients.length === 0) {
+      throw new Error('No emergency contact numbers configured');
+    }
 
     // Send SMS to all recipients
     const smsPromises = recipients.map(to => 
       client.messages.create({
         body: emergencyMessage,
-        from: '+17753681889',
+        from: process.env.TWILIO_PHONE_NUMBER,
         to
       })
     );
@@ -55,7 +68,7 @@ app.post('/crisis-alert', async (req, res) => {
     const whatsappPromises = recipients.map(to => 
       client.messages.create({
         body: emergencyMessage,
-        from: 'whatsapp:+14155238886',
+        from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
         to: `whatsapp:${to}`
       })
     );
@@ -85,14 +98,18 @@ app.post('/emergency', async (req, res) => {
 
     // Recipient numbers
     const recipients = [
-      '+918788293663'
-    ];
+      process.env.EMERGENCY_CONTACT_NUMBER
+    ].filter(Boolean);
+
+    if (recipients.length === 0) {
+      throw new Error('No emergency contact numbers configured');
+    }
 
     // Send SMS to all recipients
     const smsPromises = recipients.map(to => 
       client.messages.create({
         body: messageBody,
-        from: '+17753681889',
+        from: process.env.TWILIO_PHONE_NUMBER,
         to
       })
     );
@@ -102,7 +119,7 @@ app.post('/emergency', async (req, res) => {
     const whatsappPromises = recipients.map(to => 
       client.messages.create({
         body: messageBody,
-        from: 'whatsapp:+14155238886',
+        from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
         to: `whatsapp:${to}`
       })
     );

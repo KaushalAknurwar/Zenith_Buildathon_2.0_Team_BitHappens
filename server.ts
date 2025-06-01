@@ -2,14 +2,23 @@ import express from 'express';
 import type { Request, Response, Router, RequestHandler } from 'express';
 import cors from 'cors';
 import twilio from 'twilio';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 const router: Router = express.Router();
 const port = process.env.PORT || 3002;
 
 // Twilio configuration
-const accountSid = 'AC0b077a09883015f99d299d3f6b6ec088';
-const authToken = 'c62b2c41ffedc0cc5ae1cc2740219846';
+const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID;
+const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN;
+
+if (!accountSid || !authToken) {
+  throw new Error('Missing required Twilio credentials in environment variables');
+}
+
 const client = twilio(accountSid, authToken);
 
 // Middleware
@@ -39,15 +48,19 @@ const crisisAlertHandler: RequestHandler = async (req, res) => {
 
     // Recipient numbers
     const recipients = [
-      '+918788293663'
-    ];
+      process.env.EMERGENCY_CONTACT_NUMBER
+    ].filter(Boolean);
+
+    if (recipients.length === 0) {
+      throw new Error('No emergency contact numbers configured');
+    }
 
     // Send SMS to all recipients
     const smsPromises = recipients.map(to => 
       client.messages.create({
         body: emergencyMessage,
-        from: '+17753681889',
-        to
+        from: process.env.TWILIO_PHONE_NUMBER,
+        to: to!
       })
     );
     const smsMessages = await Promise.all(smsPromises);
@@ -57,7 +70,7 @@ const crisisAlertHandler: RequestHandler = async (req, res) => {
     const whatsappPromises = recipients.map(to => 
       client.messages.create({
         body: emergencyMessage,
-        from: 'whatsapp:+14155238886',
+        from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
         to: `whatsapp:${to}`
       })
     );
@@ -94,8 +107,8 @@ if (process.env.NODE_ENV !== 'production') {
     console.log(`Server running on port ${port}`);
     console.log('Twilio configuration:', {
       accountSid: accountSid.substring(0, 5) + '...',
-      fromNumber: '+17753681889',
-      toNumber: '+918788293663'
+      fromNumber: process.env.TWILIO_PHONE_NUMBER,
+      toNumber: process.env.EMERGENCY_CONTACT_NUMBER
     });
   });
 
