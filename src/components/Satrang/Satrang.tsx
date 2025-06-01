@@ -106,9 +106,7 @@ export function Satrang({ className }: SatrangProps) {
 										<Loader2 className="animate-spin mr-2"/>
 										Generating...
 									</>
-								) : (
-									'Generate Art'
-								)}
+								) : ('Generate Art')}
 							</Button>
 							
 							{generatedImage && (
@@ -126,11 +124,7 @@ export function Satrang({ className }: SatrangProps) {
 
 					{generatedImage && (
 						<div className="mt-8 rounded-xl overflow-hidden border border-white/20 shadow-lg backdrop-blur-sm bg-black/20">
-							<img
-								src={generatedImage}
-								alt="Generated artwork"
-								className="w-full h-auto"
-							/>
+							<img src={generatedImage} alt="Generated artwork" className="w-full h-auto"/>
 						</div>
 					)}
 				</div>
