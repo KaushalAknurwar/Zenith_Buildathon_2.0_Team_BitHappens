@@ -38,7 +38,12 @@ app.use('/api', async (req, res) => {
       // Call the appropriate handler
       apiModule[endpoint](req, res);
     } else {
-      res.status(404).json({ error: 'API endpoint not found' });
+      // Special case for send-sms
+      if (endpoint === 'send-sms') {
+        apiModule.sendSMS(req, res);
+      } else {
+        res.status(404).json({ error: 'API endpoint not found' });
+      }
     }
   } catch (error) {
     console.error('API routing error:', error);

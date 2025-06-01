@@ -20,7 +20,11 @@ export function Satrang({ className }: SatrangProps) {
 	
 	const handleGenerateImage = async () => {
 		if (!prompt.trim()) {
-			alert('Please enter a prompt!');
+			toast({
+				title: "Empty Prompt",
+				description: "Please enter a prompt to generate art!",
+				variant: "destructive"
+			});
 			return;
 		}
 
@@ -38,11 +42,14 @@ export function Satrang({ className }: SatrangProps) {
 				variant: "default"
 			});
 		} catch (error) {
+			console.error("Error generating image:", error);
 			toast({
 				title: "Error",
-				description: "Failed to generate art",
+				description: "Failed to generate art. Using fallback image.",
 				variant: "destructive"
 			});
+			// Use fallback image
+			setGeneratedImage(`https://source.unsplash.com/random/800x600/?${encodeURIComponent(prompt)}`);
 		} finally {
 			setIsLoading(false);
 		}
@@ -63,6 +70,13 @@ export function Satrang({ className }: SatrangProps) {
 
 		setGeneratedImage(null);
 		setJournalEntry('');
+		setPrompt('');
+		
+		toast({
+			title: "Artwork Saved",
+			description: "Your artwork has been saved to your journal.",
+			variant: "default"
+		});
 	};
 
 	return (
@@ -115,10 +129,20 @@ export function Satrang({ className }: SatrangProps) {
 
 					{generatedImage && (
 						<div className="mt-8 rounded-xl overflow-hidden border border-white/20 shadow-lg backdrop-blur-sm bg-black/20">
-							<img
-								src={generatedImage}
-								alt="Generated artwork"
+							<img 
+								src={generatedImage} 
+								alt="Generated artwork" 
 								className="w-full h-auto"
+								onError={(e) => {
+									// If image fails to load, use a fallback
+									const target = e.target as HTMLImageElement;
+									target.src = `https://source.unsplash.com/random/800x600/?${encodeURIComponent(prompt)}`;
+									toast({
+										title: "Image Load Error",
+										description: "Using fallback image source.",
+										variant: "destructive"
+									});
+								}}
 							/>
 						</div>
 					)}

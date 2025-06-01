@@ -44,10 +44,49 @@ export const getCurrentLocation = (): Promise<{ lat: number; lng: number }> => {
     });
 };
 
+// Send SMS via Twilio
+const sendSMS = async (phoneNumber: string, message: string): Promise<boolean> => {
+    try {
+        // Try Netlify function first
+        const response = await fetch('/.netlify/functions/api/send-sms', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                to: phoneNumber,
+                message: message
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to send SMS');
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error sending SMS:', error);
+        return false;
+    }
+};
+
 // Send crisis alert via API
 export const sendCrisisAlert = async (username: string, coords: { lat: number; lng: number }): Promise<{ success: boolean; message: string }> => {
     try {
         console.log('Sending crisis alert with coordinates:', coords);
+        
+        // Send SMS to emergency contact
+        const phoneNumber = "+918788293663"; // Your phone number
+        const message = `EMERGENCY ALERT: ${username} may need immediate help. Location: https://maps.google.com/?q=${coords.lat},${coords.lng}`;
+        
+        // Send SMS first
+        const smsSent = await sendSMS(phoneNumber, message);
+        
+        if (smsSent) {
+            console.log("✅ SMS alert sent successfully to:", phoneNumber);
+        } else {
+            console.warn("⚠️ SMS alert could not be sent, trying API alert");
+        }
         
         // Try using Netlify function directly
         try {
@@ -60,6 +99,7 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
                     username,
                     latitude: coords.lat,
                     longitude: coords.lng,
+                    phoneNumber: phoneNumber
                 }),
             });
 
@@ -88,6 +128,7 @@ export const sendCrisisAlert = async (username: string, coords: { lat: number; l
                         username,
                         latitude: coords.lat,
                         longitude: coords.lng,
+                        phoneNumber: phoneNumber
                     }),
                 });
 

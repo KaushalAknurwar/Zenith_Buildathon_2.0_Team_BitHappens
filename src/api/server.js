@@ -47,10 +47,15 @@ export const sentiment = (req, res) => {
 // Crisis alert endpoint
 export const crisisAlert = (req, res) => {
   try {
-    const { username, latitude, longitude } = req.body;
+    const { username, latitude, longitude, phoneNumber } = req.body;
     
     // Log the alert (in a real app, this would send notifications)
     console.log(`CRISIS ALERT: User ${username} at location ${latitude}, ${longitude}`);
+    
+    // If phone number is provided, send SMS
+    if (phoneNumber) {
+      sendSMS(phoneNumber, `EMERGENCY ALERT: ${username} may need immediate help. Location: https://maps.google.com/?q=${latitude},${longitude}`);
+    }
     
     res.json({ 
       success: true, 
@@ -62,6 +67,39 @@ export const crisisAlert = (req, res) => {
   }
 };
 
+// Send SMS endpoint
+export const sendSMS = (req, res) => {
+  try {
+    const { to, message } = req.body || {};
+    
+    if (!to || !message) {
+      return res.status(400).json({ error: 'Phone number and message are required' });
+    }
+    
+    // In a real app, this would use Twilio SDK
+    console.log(`SENDING SMS TO ${to}: ${message}`);
+    
+    // Simulate Twilio API call
+    const accountSid = process.env.NEXT_PUBLIC_TWILIO_ACCOUNT_SID || 'AC_your_account_sid';
+    const authToken = process.env.NEXT_PUBLIC_TWILIO_AUTH_TOKEN || 'your_auth_token';
+    const fromNumber = process.env.NEXT_PUBLIC_TWILIO_PHONE_NUMBER || '+1234567890';
+    
+    console.log(`Twilio credentials: ${accountSid.substring(0, 5)}... / ${authToken.substring(0, 5)}...`);
+    console.log(`From: ${fromNumber}, To: ${to}, Message: ${message}`);
+    
+    res.json({ 
+      success: true,
+      message: 'SMS sent successfully (simulated)'
+    });
+  } catch (error) {
+    console.error('Error sending SMS:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to send SMS'
+    });
+  }
+};
+
 // Emergency notification endpoint
 export const emergency = (req, res) => {
   try {
@@ -69,6 +107,9 @@ export const emergency = (req, res) => {
     
     // Log the emergency request (in a real app, this would use Twilio)
     console.log(`EMERGENCY REQUEST: ${name} (${phone}) - ${situation}`);
+    
+    // Send SMS to the emergency contact
+    sendSMS("+918788293663", `EMERGENCY REQUEST from ${name} (${phone}): ${situation}`);
     
     res.json({ success: true });
   } catch (error) {
@@ -99,6 +140,18 @@ export const generateImage = (req, res) => {
   }
 };
 
+// Helper function to send SMS (simulated)
+function sendSMS(to, message) {
+  // In a real app, this would use Twilio SDK
+  console.log(`SENDING SMS TO ${to}: ${message}`);
+  
+  // Log the attempt
+  console.log(`SMS would be sent to ${to} with message: ${message}`);
+  
+  // Return success for demo purposes
+  return true;
+}
+
 // Only start the server if this file is run directly
 if (import.meta.url.endsWith(process.argv[1])) {
   const app = express();
@@ -117,6 +170,7 @@ if (import.meta.url.endsWith(process.argv[1])) {
   app.post('/crisis-alert', crisisAlert);
   app.post('/emergency', emergency);
   app.post('/generate-image', generateImage);
+  app.post('/send-sms', sendSMS);
 
   // Health check endpoint
   app.get('/', (req, res) => {

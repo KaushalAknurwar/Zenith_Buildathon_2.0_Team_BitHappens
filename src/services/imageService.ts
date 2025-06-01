@@ -19,7 +19,11 @@ export const generateImage = async ({
         image_generator_version,
         negative_prompt
       });
-      return response.data.imageUrl;
+      
+      if (response.data && response.data.imageUrl) {
+        return response.data.imageUrl;
+      }
+      throw new Error("No image URL in response");
     } catch (netlifyError) {
       console.warn("Could not reach Netlify function, trying API endpoint:", netlifyError);
       
@@ -30,11 +34,15 @@ export const generateImage = async ({
           image_generator_version,
           negative_prompt
         });
-        return response.data.imageUrl;
-      } catch (apiError) {
-        console.warn("Could not reach API endpoint, using fallback:", apiError);
         
-        // Fallback to Unsplash if both attempts fail
+        if (response.data && response.data.imageUrl) {
+          return response.data.imageUrl;
+        }
+        throw new Error("No image URL in response");
+      } catch (apiError) {
+        console.warn("Could not reach API endpoint, using Unsplash fallback:", apiError);
+        
+        // Use Unsplash as fallback
         return `https://source.unsplash.com/random/800x600/?${encodeURIComponent(prompt)}`;
       }
     }
